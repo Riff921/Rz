@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rz AI - Asisten AI Pintar</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+        
+        .animated-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .chat-bubble {
+            animation: slideInUp 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        .typing-indicator {
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 1; }
+        }
+        
+        .suggestion-card {
+            transition: all 0.2s ease;
+        }
+        
+        .suggestion-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        
+
+        
+        .glow-effect {
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
+            transition: box-shadow 0.3s ease;
+        }
+        
+        .glow-effect:hover {
+            box-shadow: 0 0 30px rgba(102, 126, 234, 0.5);
+        }
+        
+        .text-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .bounce-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .fade-in-up {
+            animation: fadeIn 0.4s ease-out forwards;
+            opacity: 0;
+        }
+        
+        @media (max-width: 768px) {
+            .suggestion-card {
+                margin-bottom: 1rem;
+            }
+            
+            .chat-bubble .max-w-xs {
+                max-width: 280px;
+            }
+        }
+        
+        @media (max-width: 640px) {
+            .container {
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
+            
+            .text-3xl {
+                font-size: 1.875rem;
+            }
+            
+            .text-2xl {
+                font-size: 1.5rem;
+            }
+        }
+        
+        .message-input:focus {
+            transition: all 0.2s ease;
+        }
+        
+        .send-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: all 0.3s ease;
+        }
+        
+        .send-button:hover {
+            background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+            transform: translateY(-1px);
+        }
+        
+        .quick-action-btn {
+            transition: all 0.2s ease;
+        }
+        
+        .quick-action-btn:hover {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+    </style>
+</head>
+<body class="min-h-screen relative">
+    <!-- Animated Background -->
+    <div class="animated-bg fixed inset-0 z-0"></div>
+    
+
+
+    <!-- Header -->
+    <header class="glass-effect text-white shadow-2xl relative z-10">
+        <div class="container mx-auto px-4 sm:px-6 py-6">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4 bounce-in">
+                    <div class="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center glow-effect">
+                        <span class="text-3xl">🤖</span>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl sm:text-3xl font-bold">Rz AI</h1>
+                        <p class="text-sm opacity-90">Asisten AI Pintar Anda</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="hidden sm:flex items-center space-x-2">
+                        <div class="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+                        <span class="text-sm glass-effect px-3 py-1 rounded-full">Online</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container mx-auto px-4 sm:px-6 py-8 max-w-7xl relative z-10">
+        <!-- Hero Section -->
+        <div id="welcomeSection" class="text-center mb-16">
+            <!-- Main Hero -->
+            <div class="glass-effect rounded-3xl shadow-2xl p-8 sm:p-16 mb-12 bounce-in relative overflow-hidden">
+                <!-- Background Pattern -->
+                <div class="absolute inset-0 opacity-10">
+                    <div class="absolute top-10 left-10 w-20 h-20 border-2 border-white rounded-full"></div>
+                    <div class="absolute top-20 right-16 w-16 h-16 border-2 border-white rounded-lg rotate-45"></div>
+                    <div class="absolute bottom-16 left-20 w-12 h-12 border-2 border-white rounded-full"></div>
+                    <div class="absolute bottom-10 right-10 w-24 h-24 border-2 border-white rounded-lg rotate-12"></div>
+                </div>
+                
+                <div class="relative z-10">
+                    <div class="w-32 h-32 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-8 glow-effect">
+                        <span class="text-6xl">🤖</span>
+                    </div>
+                    <h1 class="text-4xl sm:text-5xl lg:text-7xl font-bold text-white mb-6 text-gradient leading-tight">
+                        Masa Depan AI<br>
+                        <span class="text-3xl sm:text-4xl lg:text-5xl">Dimulai dari Sini</span>
+                    </h1>
+                    <p class="text-white/90 text-xl sm:text-2xl mb-8 max-w-4xl mx-auto leading-relaxed">
+                        Rz AI adalah asisten cerdas yang memahami kebutuhan Anda. Dari menulis kreatif hingga analisis mendalam, 
+                        kami siap menjadi partner terpercaya dalam setiap tantangan digital Anda.
+                    </p>
+                    
+                    <!-- CTA Buttons -->
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
+                        <button onclick="document.getElementById('messageInput').focus()" class="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-8 py-4 rounded-2xl font-bold text-lg shadow-2xl transform hover:scale-105 transition-all duration-300 flex items-center space-x-3">
+                            <span>🚀</span>
+                            <span>Mulai Chat Sekarang</span>
+                        </button>
+                        <button onclick="scrollToFeatures()" class="glass-effect border-2 border-white/30 text-white px-8 py-4 rounded-2xl font-bold text-lg hover:bg-white/20 transition-all duration-300 flex items-center space-x-3">
+                            <span>✨</span>
+                            <span>Jelajahi Fitur</span>
+                        </button>
+                    </div>
+                    
+                    <!-- Stats -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-8 max-w-2xl mx-auto">
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-white mb-2">24/7</div>
+                            <div class="text-white/80">Selalu Online</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-white mb-2">∞</div>
+                            <div class="text-white/80">Unlimited Chat</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-white mb-2">⚡</div>
+                            <div class="text-white/80">Respons Cepat</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Features Section -->
+            <div id="featuresSection" class="mb-16">
+                <h2 class="text-3xl sm:text-4xl font-bold text-white mb-4 text-center">Apa yang Bisa Rz AI Lakukan?</h2>
+                <p class="text-white/80 text-lg text-center mb-12 max-w-2xl mx-auto">
+                    Jelajahi berbagai kemampuan AI yang dapat membantu pekerjaan dan kreativitas Anda
+                </p>
+                
+                <!-- Feature Cards -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+                    <div class="suggestion-card glass-effect rounded-3xl p-8 shadow-xl cursor-pointer border border-white/20 fade-in-up group" onclick="askQuestion('Buatkan saya artikel tentang teknologi AI terbaru')">
+                        <div class="w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                            <span class="text-3xl">📝</span>
+                        </div>
+                        <h3 class="font-bold text-white text-xl mb-4">Content Creator</h3>
+                        <p class="text-white/80 mb-6 leading-relaxed">Buat artikel, blog, copywriting, dan konten kreatif yang engaging dan berkualitas tinggi</p>
+                        <div class="flex items-center text-purple-300 font-semibold">
+                            <span>Coba Sekarang</span>
+                            <span class="ml-2 group-hover:translate-x-2 transition-transform duration-300">→</span>
+                        </div>
+                    </div>
+                    
+                    <div class="suggestion-card glass-effect rounded-3xl p-8 shadow-xl cursor-pointer border border-white/20 fade-in-up group" onclick="askQuestion('Jelaskan konsep machine learning dengan bahasa sederhana')">
+                        <div class="w-16 h-16 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                            <span class="text-3xl">🧠</span>
+                        </div>
+                        <h3 class="font-bold text-white text-xl mb-4">Knowledge Expert</h3>
+                        <p class="text-white/80 mb-6 leading-relaxed">Pahami konsep kompleks dengan penjelasan sederhana dan mudah dipahami</p>
+                        <div class="flex items-center text-blue-300 font-semibold">
+                            <span>Pelajari Lebih</span>
+                            <span class="ml-2 group-hover:translate-x-2 transition-transform duration-300">→</span>
+                        </div>
+                    </div>
+                    
+                    <div class="suggestion-card glass-effect rounded-3xl p-8 shadow-xl cursor-pointer border border-white/20 fade-in-up group" onclick="askQuestion('Berikan ide kreatif untuk bisnis online yang menguntungkan')">
+                        <div class="w-16 h-16 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                            <span class="text-3xl">💡</span>
+                        </div>
+                        <h3 class="font-bold text-white text-xl mb-4">Innovation Partner</h3>
+                        <p class="text-white/80 mb-6 leading-relaxed">Dapatkan ide-ide segar dan solusi kreatif untuk bisnis dan project Anda</p>
+                        <div class="flex items-center text-yellow-300 font-semibold">
+                            <span>Brainstorm Ide</span>
+                            <span class="ml-2 group-hover:translate-x-2 transition-transform duration-300">→</span>
+                        </div>
+                    </div>
+                    
+                    <div class="suggestion-card glass-effect rounded-3xl p-8 shadow-xl cursor-pointer border border-white/20 fade-in-up group" onclick="askQuestion('Analisis tren pasar cryptocurrency tahun 2024')">
+                        <div class="w-16 h-16 bg-gradient-to-r from-green-500 to-teal-500 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                            <span class="text-3xl">📊</span>
+                        </div>
+                        <h3 class="font-bold text-white text-xl mb-4">Data Analyst</h3>
+                        <p class="text-white/80 mb-6 leading-relaxed">Interpretasi data, analisis tren, dan insight mendalam untuk keputusan bisnis</p>
+                        <div class="flex items-center text-green-300 font-semibold">
+                            <span>Analisis Data</span>
+                            <span class="ml-2 group-hover:translate-x-2 transition-transform duration-300">→</span>
+                        </div>
+                    </div>
+                    
+                    <div class="suggestion-card glass-effect rounded-3xl p-8 shadow-xl cursor-pointer border border-white/20 fade-in-up group" onclick="askQuestion('Buatkan rencana belajar programming untuk pemula')">
+                        <div class="w-16 h-16 bg-gradient-to-r from-red-500 to-pink-500 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                            <span class="text-3xl">🎯</span>
+                        </div>
+                        <h3 class="font-bold text-white text-xl mb-4">Strategic Planner</h3>
+                        <p class="text-white/80 mb-6 leading-relaxed">Buat roadmap pembelajaran, strategi bisnis, dan rencana pencapaian goals</p>
+                        <div class="flex items-center text-red-300 font-semibold">
+                            <span>Buat Rencana</span>
+                            <span class="ml-2 group-hover:translate-x-2 transition-transform duration-300">→</span>
+                        </div>
+                    </div>
+                    
+                    <div class="suggestion-card glass-effect rounded-3xl p-8 shadow-xl cursor-pointer border border-white/20 fade-in-up group" onclick="askQuestion('Bagaimana cara meningkatkan produktivitas kerja dari rumah?')">
+                        <div class="w-16 h-16 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                            <span class="text-3xl">🚀</span>
+                        </div>
+                        <h3 class="font-bold text-white text-xl mb-4">Productivity Coach</h3>
+                        <p class="text-white/80 mb-6 leading-relaxed">Tips praktis, life hacks, dan strategi untuk meningkatkan efisiensi harian</p>
+                        <div class="flex items-center text-indigo-300 font-semibold">
+                            <span>Tingkatkan Produktivitas</span>
+                            <span class="ml-2 group-hover:translate-x-2 transition-transform duration-300">→</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Why Choose Section -->
+            <div class="glass-effect rounded-3xl p-8 sm:p-12 mb-12">
+                <h2 class="text-3xl sm:text-4xl font-bold text-white mb-8 text-center">Mengapa Memilih Rz AI?</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-gradient-to-r from-purple-500 to-blue-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                            <span class="text-2xl">🎯</span>
+                        </div>
+                        <h3 class="font-bold text-white text-lg mb-3">Akurat & Relevan</h3>
+                        <p class="text-white/80 text-sm">Jawaban yang tepat sasaran dan sesuai konteks pertanyaan Anda</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-gradient-to-r from-green-500 to-teal-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                            <span class="text-2xl">⚡</span>
+                        </div>
+                        <h3 class="font-bold text-white text-lg mb-3">Super Cepat</h3>
+                        <p class="text-white/80 text-sm">Respons dalam hitungan detik, tidak perlu menunggu lama</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                            <span class="text-2xl">🔒</span>
+                        </div>
+                        <h3 class="font-bold text-white text-lg mb-3">Aman & Privat</h3>
+                        <p class="text-white/80 text-sm">Percakapan Anda aman dan tidak disimpan secara permanen</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-gradient-to-r from-pink-500 to-red-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                            <span class="text-2xl">🌟</span>
+                        </div>
+                        <h3 class="font-bold text-white text-lg mb-3">Selalu Update</h3>
+                        <p class="text-white/80 text-sm">Pengetahuan terkini dan mengikuti perkembangan teknologi</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat Container -->
+        <div id="chatContainer" class="glass-effect rounded-3xl shadow-2xl overflow-hidden border border-white/20" style="display: none;">
+            <!-- Chat Header -->
+            <div class="bg-gradient-to-r from-purple-500/80 to-blue-500/80 text-white p-6 backdrop-blur-sm">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-10 h-10 bg-white/20 rounded-2xl flex items-center justify-center glow-effect">
+                            <span class="text-xl">🤖</span>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-lg">Rz AI Assistant</h3>
+                            <p class="text-sm opacity-90">Siap membantu Anda</p>
+                        </div>
+                    </div>
+                    <button onclick="clearChat()" class="glass-effect hover:bg-white/30 px-4 py-2 rounded-xl text-sm transition-all duration-300 hover:scale-105">
+                        Bersihkan Chat
+                    </button>
+                </div>
+            </div>
+
+            <!-- Chat Messages -->
+            <div id="chatMessages" class="h-80 sm:h-96 overflow-y-auto p-4 sm:p-6 space-y-4 bg-white/5">
+                <!-- Messages will be added here -->
+            </div>
+
+            <!-- Typing Indicator -->
+            <div id="typingIndicator" class="px-6 pb-4 bg-white/5" style="display: none;">
+                <div class="flex items-center space-x-3 text-white/70">
+                    <div class="flex space-x-1">
+                        <div class="w-3 h-3 bg-white/50 rounded-full typing-indicator"></div>
+                        <div class="w-3 h-3 bg-white/50 rounded-full typing-indicator" style="animation-delay: 0.2s;"></div>
+                        <div class="w-3 h-3 bg-white/50 rounded-full typing-indicator" style="animation-delay: 0.4s;"></div>
+                    </div>
+                    <span class="text-sm">Rz AI sedang mengetik...</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Input Section -->
+        <div id="inputSection" class="mt-8">
+            <div class="glass-effect rounded-3xl shadow-2xl p-6 border border-white/20">
+                <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+                    <input 
+                        type="text" 
+                        id="messageInput" 
+                        placeholder="Tanyakan apa saja kepada Rz AI..." 
+                        class="message-input flex-1 px-6 py-4 bg-white/10 border border-white/20 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-white placeholder-white/70 backdrop-blur-sm"
+                        onkeypress="handleKeyPress(event)"
+                    >
+                    <button 
+                        onclick="sendMessage()" 
+                        class="send-button text-white px-8 py-4 rounded-2xl font-semibold flex items-center justify-center space-x-2 shadow-lg"
+                    >
+                        <span>Kirim</span>
+                        <span>🚀</span>
+                    </button>
+                </div>
+                
+                <!-- Quick Actions -->
+                <div class="flex flex-wrap gap-3 mt-6">
+                    <button onclick="askQuestion('Apa kabar hari ini?')" class="quick-action-btn bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-xl text-sm backdrop-blur-sm border border-white/20">Sapaan</button>
+                    <button onclick="askQuestion('Ceritakan joke yang lucu')" class="quick-action-btn bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-xl text-sm backdrop-blur-sm border border-white/20">Hiburan</button>
+                    <button onclick="askQuestion('Berikan motivasi untuk hari ini')" class="quick-action-btn bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-xl text-sm backdrop-blur-sm border border-white/20">Motivasi</button>
+                    <button onclick="askQuestion('Jelaskan tren teknologi terbaru')" class="quick-action-btn bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-xl text-sm backdrop-blur-sm border border-white/20">Teknologi</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="glass-effect text-white py-12 mt-16 relative z-10 border-t border-white/20">
+        <div class="container mx-auto px-4 sm:px-6 text-center">
+            <div class="flex items-center justify-center space-x-3 mb-6">
+                <div class="w-12 h-12 bg-gradient-to-r from-purple-500 to-blue-500 rounded-2xl flex items-center justify-center glow-effect">
+                    <span class="text-2xl">🤖</span>
+                </div>
+                <span class="text-2xl font-bold">Rz AI</span>
+            </div>
+            <p class="text-white/80 mb-6 text-lg">Asisten AI yang siap membantu Anda 24/7</p>
+            <div class="flex flex-col sm:flex-row justify-center items-center space-y-2 sm:space-y-0 sm:space-x-8 text-sm">
+                <div class="flex items-center space-x-2">
+                    <span>✨</span>
+                    <span>Cerdas & Responsif</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <span>🔒</span>
+                    <span>Aman & Terpercaya</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <span>🚀</span>
+                    <span>Selalu Update</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        let conversationHistory = [];
+        
+        // AI Response Database
+        const aiResponses = {
+            greetings: [
+                "Halo! Saya Rz AI, asisten AI yang siap membantu Anda. Ada yang bisa saya bantu hari ini? ✨",
+                "Selamat datang! Saya di sini untuk menjawab pertanyaan dan membantu Anda dengan berbagai tugas. 🚀",
+                "Hai! Senang bertemu dengan Anda. Apa yang ingin Anda ketahui atau diskusikan hari ini? 😊"
+            ],
+            
+            technology: [
+                "Teknologi AI berkembang sangat pesat! 🚀 Saat ini, kita melihat kemajuan besar dalam machine learning, natural language processing, dan computer vision. Beberapa tren terbaru termasuk AI generatif seperti ChatGPT, pengembangan AI yang lebih efisien energi, dan integrasi AI dalam berbagai industri seperti healthcare, finance, dan education.\n\nYang menarik adalah bagaimana AI mulai dapat memahami konteks yang lebih kompleks dan memberikan respons yang lebih natural seperti manusia! 🤖✨",
+                "Dunia teknologi terus berevolusi dengan inovasi-inovasi menarik! 💡 Dari quantum computing yang mulai praktis, hingga metaverse yang mengubah cara kita berinteraksi digital. Internet of Things (IoT) juga semakin canggih, menghubungkan lebih banyak perangkat dalam ekosistem smart home dan smart city.\n\nBayangkan masa depan di mana semua perangkat di rumah Anda dapat berkomunikasi dan bekerja sama untuk membuat hidup lebih mudah! 🏠🔗"
+            ],
+            
+            business: [
+                "Untuk bisnis online yang menguntungkan, pertimbangkan beberapa ide ini: 💰\n\n1️⃣ E-commerce niche dengan produk unik\n2️⃣ Layanan konsultasi digital\n3️⃣ Kursus online sesuai keahlian Anda\n4️⃣ Dropshipping produk trending\n5️⃣ Affiliate marketing\n6️⃣ Content creation dan monetisasi\n7️⃣ Aplikasi mobile sederhana yang memecahkan masalah spesifik\n\nKunci sukses: mulai kecil, fokus pada satu niche, dan selalu dengarkan feedback customer! 🎯",
+                "Bisnis digital memiliki potensi besar! 🌟 Anda bisa memulai dengan modal kecil melalui: freelancing services, digital marketing agency, online coaching, subscription-based content, atau marketplace untuk produk digital.\n\nTips dari saya: pilih bidang yang Anda kuasai, bangun personal brand yang kuat, dan jangan takut untuk bereksperimen. Kunci sukses adalah konsistensi, kualitas, dan memahami target market Anda! 💪"
+            ],
+            
+            motivation: [
+                "Setiap hari adalah kesempatan baru untuk menjadi versi terbaik dari diri Anda! 🌟 Ingatlah bahwa kesuksesan bukan tentang seberapa cepat Anda mencapai tujuan, tapi tentang konsistensi dalam mengambil langkah kecil setiap hari.\n\nAnda lebih kuat dari yang Anda kira! 💪 Setiap tantangan adalah kesempatan untuk tumbuh. Jangan pernah menyerah pada impian Anda! ✨",
+                "Percayalah pada proses! 🚀 Setiap tantangan yang Anda hadapi hari ini adalah batu loncatan menuju kesuksesan masa depan. Jangan takut untuk bermimpi besar, karena mimpi yang besar membutuhkan keberanian yang besar pula.\n\nIngat: 'Success is not final, failure is not fatal, it's the courage to continue that counts.' Anda pasti bisa! 🌈",
+                "Hari ini adalah hari yang sempurna untuk memulai sesuatu yang baru! ✨ Jangan menunggu kondisi yang 'sempurna' karena kesempurnaan adalah musuh dari kemajuan.\n\nMulai dari mana Anda berada, dengan apa yang Anda miliki, dan lakukan yang terbaik! Setiap expert pernah menjadi pemula. Your journey starts now! 🎯🚀"
+            ],
+            
+            learning: [
+                "Untuk belajar programming sebagai pemula, saya sarankan roadmap ini: 🗺️\n\n1️⃣ Mulai dengan HTML/CSS untuk web basics\n2️⃣ Pelajari JavaScript untuk interaktivitas\n3️⃣ Pilih satu bahasa backend (Python/Node.js)\n4️⃣ Pahami database dasar\n5️⃣ Buat project sederhana\n6️⃣ Pelajari Git/GitHub\n7️⃣ Join komunitas developer untuk networking\n\nTips: practice makes perfect! Code every day, even if just 30 minutes! 💻✨",
+                "Belajar programming itu seperti belajar bahasa baru! 🗣️ Mulai dengan konsep dasar: variabel, fungsi, loop, dan kondisi. Praktik coding setiap hari minimal 30 menit.\n\nGunakan platform seperti freeCodeCamp, Codecademy, atau YouTube untuk tutorial gratis. Yang terpenting: jangan takut membuat error, karena debugging adalah bagian dari proses belajar! Every bug is a lesson! 🐛➡️💡"
+            ],
+            
+            productivity: [
+                "Tips produktivitas work from home yang terbukti efektif: 🏠💼\n\n1️⃣ Buat workspace khusus yang nyaman\n2️⃣ Tetapkan jadwal kerja yang konsisten\n3️⃣ Gunakan teknik Pomodoro (25 menit fokus, 5 menit istirahat)\n4️⃣ Minimalisir distraksi (matikan notifikasi yang tidak perlu)\n5️⃣ Buat to-do list harian\n6️⃣ Jaga komunikasi yang baik dengan tim\n7️⃣ Sisihkan waktu untuk olahraga dan istirahat\n\nRemember: work smarter, not harder! 🧠⚡",
+                "Kunci produktivitas di rumah adalah disiplin dan struktur! 📋 Bangun dan bersiap seperti akan ke kantor, buat boundary yang jelas antara waktu kerja dan personal.\n\nGunakan tools produktivitas seperti Trello, Notion, atau Todoist untuk mengorganisir tugas. Dan jangan lupa untuk tetap bersosialisasi dengan rekan kerja melalui video call reguler. Balance is key! ⚖️✨"
+            ],
+            
+            jokes: [
+                "Kenapa programmer selalu membawa payung? ☔\nKarena takut ada bug di cloud! ☁️😄\n\nBonus joke: Mengapa AI tidak pernah merasa kesepian? Karena selalu ada di network! 🤖📡",
+                "Apa bedanya AI dengan manusia? 🤔\nAI tidak pernah lupa password, tapi sering lupa konteks! 🤖😅\n\nDan satu lagi: Programmer berkata, 'Kode saya berjalan dengan sempurna!' *5 menit kemudian* 'Mengapa semuanya error?!' 😂💻",
+                "Mengapa komputer tidak pernah lapar? 🖥️\nKarena sudah kenyang dengan byte! 💻🍽️\n\nBonus: Apa yang dilakukan programmer saat stress? Mereka men-debug kehidupan mereka! 🐛➡️✨"
+            ],
+            
+            analysis: [
+                "Analisis tren cryptocurrency 2024 menunjukkan pola menarik: 📈\n\n1️⃣ Adopsi institusional terus meningkat\n2️⃣ Regulasi yang lebih jelas di berbagai negara\n3️⃣ Fokus pada sustainability dan proof-of-stake\n4️⃣ Integrasi DeFi dengan traditional finance\n5️⃣ NFT utility yang lebih praktis\n6️⃣ Central Bank Digital Currencies (CBDC) mulai diluncurkan\n\nNamun, volatilitas tetap tinggi dan investor harus berhati-hati! Always DYOR (Do Your Own Research)! 🔍💰",
+                "Pasar crypto 2024 dipengaruhi oleh faktor makroekonomi global, perkembangan teknologi blockchain, dan sentimen investor. 📊\n\nTren positif: meningkatnya use case real-world, infrastruktur yang lebih matang, dan edukasi publik yang lebih baik. Namun, risiko regulasi dan volatilitas pasar tetap menjadi perhatian utama.\n\nSaran: diversifikasi portfolio dan jangan invest lebih dari yang bisa Anda tanggung kerugiannya! 💡🛡️"
+            ]
+        };
+
+        function getAIResponse(message) {
+            const lowerMessage = message.toLowerCase();
+            
+            // Greeting responses
+            if (lowerMessage.includes('hai') || lowerMessage.includes('halo') || lowerMessage.includes('selamat') || lowerMessage.includes('kabar')) {
+                return aiResponses.greetings[Math.floor(Math.random() * aiResponses.greetings.length)];
+            }
+            
+            // Technology responses
+            if (lowerMessage.includes('teknologi') || lowerMessage.includes('ai') || lowerMessage.includes('machine learning') || lowerMessage.includes('artificial intelligence')) {
+                return aiResponses.technology[Math.floor(Math.random() * aiResponses.technology.length)];
+            }
+            
+            // Business responses
+            if (lowerMessage.includes('bisnis') || lowerMessage.includes('usaha') || lowerMessage.includes('ide') || lowerMessage.includes('online') || lowerMessage.includes('menguntungkan')) {
+                return aiResponses.business[Math.floor(Math.random() * aiResponses.business.length)];
+            }
+            
+            // Motivation responses
+            if (lowerMessage.includes('motivasi') || lowerMessage.includes('semangat') || lowerMessage.includes('inspirasi')) {
+                return aiResponses.motivation[Math.floor(Math.random() * aiResponses.motivation.length)];
+            }
+            
+            // Learning responses
+            if (lowerMessage.includes('belajar') || lowerMessage.includes('programming') || lowerMessage.includes('coding') || lowerMessage.includes('rencana')) {
+                return aiResponses.learning[Math.floor(Math.random() * aiResponses.learning.length)];
+            }
+            
+            // Productivity responses
+            if (lowerMessage.includes('produktivitas') || lowerMessage.includes('kerja') || lowerMessage.includes('rumah') || lowerMessage.includes('efisien')) {
+                return aiResponses.productivity[Math.floor(Math.random() * aiResponses.productivity.length)];
+            }
+            
+            // Jokes responses
+            if (lowerMessage.includes('joke') || lowerMessage.includes('lucu') || lowerMessage.includes('humor') || lowerMessage.includes('hiburan')) {
+                return aiResponses.jokes[Math.floor(Math.random() * aiResponses.jokes.length)];
+            }
+            
+            // Analysis responses
+            if (lowerMessage.includes('analisis') || lowerMessage.includes('cryptocurrency') || lowerMessage.includes('crypto') || lowerMessage.includes('tren') || lowerMessage.includes('pasar')) {
+                return aiResponses.analysis[Math.floor(Math.random() * aiResponses.analysis.length)];
+            }
+            
+            // Default intelligent responses
+            const defaultResponses = [
+                `Pertanyaan yang menarik tentang "${message}"! 🤔 Berdasarkan pemahaman saya, ini adalah topik yang kompleks dan memiliki banyak aspek untuk dibahas.\n\nSaya akan coba memberikan perspektif yang komprehensif: Topik ini melibatkan berbagai faktor yang saling berkaitan. Untuk memberikan jawaban yang lebih spesifik, mungkin Anda bisa memberikan konteks lebih detail tentang aspek mana yang paling ingin Anda ketahui? 💡`,
+                
+                `Terima kasih atas pertanyaan tentang "${message}"! 🙏 Ini adalah area yang sangat relevan dan penting untuk dipahami.\n\nBerdasarkan tren dan perkembangan terkini, ada beberapa poin kunci yang perlu dipertimbangkan. Namun, untuk memberikan insight yang lebih mendalam dan actionable, bisakah Anda menjelaskan lebih spesifik tentang tujuan atau konteks dari pertanyaan ini? 🎯`,
+                
+                `"${message}" adalah topik yang sangat menarik untuk dibahas! ✨ Saya melihat ini dari berbagai sudut pandang dan ada banyak hal yang bisa kita eksplorasi bersama.\n\nUntuk memberikan jawaban yang paling bermanfaat bagi Anda, mungkin Anda bisa memberikan detail lebih lanjut tentang apa yang spesifik ingin Anda ketahui atau capai terkait topik ini? 🚀`
+            ];
+            
+            return defaultResponses[Math.floor(Math.random() * defaultResponses.length)];
+        }
+
+        function showChat() {
+            document.getElementById('welcomeSection').style.display = 'none';
+            document.getElementById('chatContainer').style.display = 'block';
+        }
+
+        function addMessage(message, isUser = false) {
+            const chatMessages = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `chat-bubble flex ${isUser ? 'justify-end' : 'justify-start'} mb-6`;
+            
+            const messageContent = `
+                <div class="flex items-start space-x-3 max-w-xs sm:max-w-md lg:max-w-lg">
+                    ${!isUser ? '<div class="w-10 h-10 bg-gradient-to-r from-purple-500 to-blue-500 rounded-2xl flex items-center justify-center flex-shrink-0 glow-effect"><span class="text-white text-lg">🤖</span></div>' : ''}
+                    <div class="${isUser ? 'bg-gradient-to-r from-purple-500 to-blue-500 text-white' : 'glass-effect text-white border border-white/20'} rounded-3xl px-6 py-4 ${isUser ? 'rounded-br-lg' : 'rounded-bl-lg'} shadow-lg">
+                        <p class="text-sm sm:text-base leading-relaxed whitespace-pre-line">${message}</p>
+                        <div class="text-xs opacity-70 mt-3">${new Date().toLocaleTimeString('id-ID', {hour: '2-digit', minute: '2-digit'})}</div>
+                    </div>
+                    ${isUser ? '<div class="w-10 h-10 glass-effect rounded-2xl flex items-center justify-center flex-shrink-0 border border-white/20"><span class="text-white text-lg">👤</span></div>' : ''}
+                </div>
+            `;
+            
+            messageDiv.innerHTML = messageContent;
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function showTypingIndicator() {
+            document.getElementById('typingIndicator').style.display = 'block';
+            const chatMessages = document.getElementById('chatMessages');
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function hideTypingIndicator() {
+            document.getElementById('typingIndicator').style.display = 'none';
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            
+            if (message === '') return;
+            
+            showChat();
+            addMessage(message, true);
+            input.value = '';
+            
+            // Show typing indicator
+            showTypingIndicator();
+            
+            // Simulate AI thinking time
+            setTimeout(() => {
+                hideTypingIndicator();
+                const response = getAIResponse(message);
+                addMessage(response, false);
+                
+                // Add to conversation history
+                conversationHistory.push({user: message, ai: response});
+            }, 1500 + Math.random() * 1000);
+        }
+
+        function askQuestion(question) {
+            document.getElementById('messageInput').value = question;
+            sendMessage();
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        function clearChat() {
+            document.getElementById('chatMessages').innerHTML = '';
+            document.getElementById('welcomeSection').style.display = 'block';
+            document.getElementById('chatContainer').style.display = 'none';
+            conversationHistory = [];
+        }
+
+        // Scroll to features section
+        function scrollToFeatures() {
+            document.getElementById('featuresSection').scrollIntoView({ 
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
+
+        // Focus on input when page loads - disabled to keep landing page view
+        window.onload = function() {
+            // Keep the beautiful landing page visible on first load
+            // Users can manually start chatting when ready
+        };
+
+        // Add smooth scrolling behavior
+        document.documentElement.style.scrollBehavior = 'smooth';
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9763982c71c0821d',t:'MTc1NjM4MTg2Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
